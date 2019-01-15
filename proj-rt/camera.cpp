@@ -42,6 +42,15 @@ void Camera::Set_Resolution(const ivec2& number_pixels_input)
 vec3 Camera::World_Position(const ivec2& pixel_index)
 {
     vec3 result;
-    TODO;
+ //   TODO;
+    vec2 C = Cell_Center(pixel_index);
+    vec3 Fp = film_position;         //film position (bottom left of the screen 
+    vec3 u = this->horizontal_vector;  
+    vec3 v = this->vertical_vector;
+    
+    result = Fp + (u * C[0]) + (v * C[1]); //formula
+    result = result - this->position;
+    
+    return result;
     return result;
 }
