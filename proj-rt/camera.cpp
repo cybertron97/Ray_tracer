@@ -52,5 +52,5 @@ vec3 Camera::World_Position(const ivec2& pixel_index)
     result = result - this->position;
     
     return result;
-    return result;
+    
 }
