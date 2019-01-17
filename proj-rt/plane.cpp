@@ -10,7 +10,7 @@ Hit Plane::Intersection(const Ray& ray, int part) const
 {
    // TODO; 
    Hit hit; 
-   double t = (dot(x1-ray.endpoint), normal)/dot(ray.endpoint, normal); 
+   double t = (dot((x1-ray.endpoint), normal))/dot(ray.endpoint, normal); 
    if (t>=0) 
     {
         hit.dist = t;
