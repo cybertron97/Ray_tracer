@@ -23,24 +23,20 @@ Render_World::~Render_World()
 Hit Render_World::Closest_Intersection(const Ray& ray)
 {
    // TODO;
-   Object* closest_object = NULL;
-    float min_t = 9999;
-    for(unsigned i = 0; i < this->objects.size(); ++i)
- {
-     std::vector<Hit> hits;
-       this->objects.at(i)->Intersection(ray, hits);
-      for(unsigned j = 0; j < hits.size(); ++j)
-        {     
-    	  if(hits.at(j).t < min_t && hits.at(j).t > small_t)
-              {
-    	        closest_object = const_cast<Object*>(hits.at(j).object);
-    	        hit = hits.at(j);
-    	        min_t = hits.at(j).t;
-              }
-        }
-    }
-    return closest_object;
-    
+   double min_t = std::numeric_limits<double>::max(); 
+   Hit a_hit; 
+   for (int i =0; i<objects.size(); i++) 
+  {
+     Hit possibleHit = objects.at(i)->Intersection(ray,0); 
+     if (possibleHit.dist > 0.0001 && min_t >possibleHit.dist) 
+	{	
+ 	  a_hit = possibleHit; 
+	  min_t = possibleHit.dist; 
+
+	}	
+
+   }	
+   return a_hit;  
 }
 
 // set up the initial view ray and call
