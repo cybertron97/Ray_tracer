@@ -23,20 +23,25 @@ Render_World::~Render_World()
 Hit Render_World::Closest_Intersection(const Ray& ray)
 {
    // TODO;
-   double min_t = std::numeric_limits<double>::max(); 
-   Hit a_hit; 
-   for (int i =0; i<objects.size(); i++) 
+   double min_t = std::numeric_limits<double>::max();
+   Hit a_hit;
+   a_hit.dist = -1;
+   for (unsigned int i =0; i<objects.size(); i++)
   {
-     Hit possibleHit = objects.at(i)->Intersection(ray,0); 
-     if (possibleHit.dist > 0.0001 && min_t >possibleHit.dist) 
-	{	
- 	  a_hit = possibleHit; 
-	  min_t = possibleHit.dist; 
+     Hit possibleHit = objects[i]->Intersection(ray,objects[i]-> number_parts);
+   // std :: cout << "Before \t";
+   // std ::cout <<possibleHit.dist <<std :: endl;
+   // std :: cout <<small_t << std :: endl ;
+   // std :: cout << min_t<< std :: endl;
+   if (possibleHit.dist > small_t && min_t > possibleHit.dist)
+	{
+    // std::cout << "After" << std::endl;
 
-	}	
-
-   }	
-   return a_hit;  
+ 	  a_hit = possibleHit;
+	  min_t = possibleHit.dist;
+  }
+ }
+   return a_hit;
 }
 
 // set up the initial view ray and call
@@ -44,13 +49,12 @@ void Render_World::Render_Pixel(const ivec2& pixel_index)
 {
    // TODO; /
    // / set up the initial view ray here
-Ray ray;    
-vec3 e_p =camera.position;  //we know that the ray endpoint would be actually the position of the camera
-vec3 direction = this->camera.World_Position(pixel_index).normalized(); 
-ray.endpoint = e_p; 
-ray.direction = direction; 
+Ray ray;
+vec3 direction = (this->camera.World_Position(pixel_index)- camera.position).normalized();
+ray.endpoint = camera.position;   //we know that the ray endpoint would be actually the position of the camera
+ray.direction = direction;
 
-   
+
     vec3 color=Cast_Ray(ray,1);
     camera.Set_Pixel(pixel_index,Pixel_Color(color));
 }
@@ -70,12 +74,23 @@ void Render_World::Render()
 vec3 Render_World::Cast_Ray(const Ray& ray,int recursion_depth)
 {
     vec3 color;
-    if (Closest_Intersection(ray).dist  >=  small_t) {
+
+    if (Closest_Intersection(ray).dist >= small_t) {
         color =Closest_Intersection(ray).object->material_shader->Shade_Surface(ray, ray.Point(Closest_Intersection(ray).dist), Closest_Intersection(ray).object->Normal(ray.Point(Closest_Intersection(ray).dist), Closest_Intersection(ray).part), recursion_depth);
-    } else if (Closest_Intersection(ray).dist < small_t)
+    }
+
+    else if (recursion_depth>recursion_depth_limit)
+{
+  color = {0,0,0}; //gotta check
+  //need to ask about the recursion_depth_limit
+}
+
+    else
     {
-        color = {0,0,0};
-    }     
+      vec3 dumb;
+     color = background_shader->Shade_Surface(ray,dumb, ray.endpoint, recursion_depth) ;
+        //color = {0,0,0}; //TA told that this is only valid for a couple
+    }
 // determine the color here
     return color;
 }
