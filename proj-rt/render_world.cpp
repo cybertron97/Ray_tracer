@@ -25,20 +25,20 @@ Hit Render_World::Closest_Intersection(const Ray& ray)
    // TODO;
    double min_t = std::numeric_limits<double>::max();
    Hit a_hit;
-   a_hit.dist = -1;
+   a_hit.dist = 0;
    for (unsigned int i =0; i<objects.size(); i++)
   {
-     Hit possibleHit = objects[i]->Intersection(ray,objects[i]-> number_parts);
+     Hit p_hit = objects.at(i)->Intersection(ray,objects.at(i)-> number_parts);
+//to check the seg fault:
    // std :: cout << "Before \t";
-   // std ::cout <<possibleHit.dist <<std :: endl;
+   // std ::cout <<p_hit.dist <<std :: endl;
    // std :: cout <<small_t << std :: endl ;
    // std :: cout << min_t<< std :: endl;
-   if (possibleHit.dist > small_t && min_t > possibleHit.dist)
+   if (p_hit.dist > small_t && min_t > p_hit.dist)
 	{
     // std::cout << "After" << std::endl;
-
- 	  a_hit = possibleHit;
-	  min_t = possibleHit.dist;
+    a_hit = p_hit;
+	  min_t = p_hit.dist;
   }
  }
    return a_hit;
@@ -47,16 +47,14 @@ Hit Render_World::Closest_Intersection(const Ray& ray)
 // set up the initial view ray and call
 void Render_World::Render_Pixel(const ivec2& pixel_index)
 {
-   // TODO; /
-   // / set up the initial view ray here
+   // TODO;
+   // set up the initial view ray here
 Ray ray;
 vec3 direction = (this->camera.World_Position(pixel_index)- camera.position).normalized();
 ray.endpoint = camera.position;   //we know that the ray endpoint would be actually the position of the camera
 ray.direction = direction;
-
-
-    vec3 color=Cast_Ray(ray,1);
-    camera.Set_Pixel(pixel_index,Pixel_Color(color));
+vec3 color=Cast_Ray(ray,1);
+camera.Set_Pixel(pixel_index,Pixel_Color(color));
 }
 
 void Render_World::Render()
@@ -87,7 +85,7 @@ vec3 Render_World::Cast_Ray(const Ray& ray,int recursion_depth)
 
     else
     {
-      vec3 dumb;
+      vec3 dumb; //empty vector TA told to do this
      color = background_shader->Shade_Surface(ray,dumb, ray.endpoint, recursion_depth) ;
         //color = {0,0,0}; //TA told that this is only valid for a couple
     }
@@ -99,7 +97,8 @@ void Render_World::Initialize_Hierarchy()
 {
     TODO; // Fill in hierarchy.entries; there should be one entry for
     // each part of each object.
-
+    //std ::cout<<
+    //gave it a shot it didnt work!
     hierarchy.Reorder_Entries();
     hierarchy.Build_Tree();
 }
