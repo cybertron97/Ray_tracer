@@ -4,33 +4,31 @@
 // Determine if the ray intersects with the sphere
 Hit Sphere::Intersection(const Ray& ray, int part) const
 {
-    //TODO;
-    Hit res;
-    res.dist =0; 
-vec3 diff = ray.endpoint - center;
-double d = dot(ray.direction, diff);
-double a = dot (ray.direction, ray.direction);
-double square_root = sqrt(pow(d,2) -  (diff.magnitude_squared() - pow(radius,2))); //follow the formula
-double t_1= d + square_root;
-double t_2 = d - square_root;
-if (square_root < 0)
+Hit result {this, 0 , part};
+vec3 diff = ray.endpoint - center; //e-c
+double a = dot(ray.direction, diff); //d . (e-c)
+double b = dot(ray.direction,ray.direction); //d .d =1
+double c = dot(diff,diff) - pow(radius,2);
+double discr = pow(a,2) - (b * c); //the one inside the square rooot
+if(discr == 0) //if the discr is zero , it just checks for the -b/a, which saves us memory
 {
-  res.dist = -1;
-
+   double t = (-1 * a/ b);
+   if(t > small_t)
+   {
+      result.dist = t;
+    }
 }
-else if (t_1 > 0.0001 || t_2 > 0.0001 )
+else if(discr > 0) //if the discriminant is greater than zero, then it checks the following conditions
 {
-  if (t_1>t_2)
+  double t1 = (-1 * a + sqrt(discr)) / b;
+  double t2 = (-1 * a - sqrt(discr)) / b;
+  if(t1> small_t && t2 > small_t)
   {
-    res.dist = t_1;
+    result.dist = std::min(t1,t2);
   }
-  else res.dist =t_2;
-
 }
-
-return res ;
+return result;
 }
-
 vec3 Sphere::Normal(const vec3& point, int part) const
 {
     vec3 normal;
