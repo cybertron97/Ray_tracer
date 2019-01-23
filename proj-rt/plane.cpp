@@ -9,7 +9,7 @@
 Hit Plane::Intersection(const Ray& ray, int part) const
 {
    // TODO;
-   Hit hit {this,0,part};
+   Hit hit {this, 0, part};
 
    double t = (dot((x1-ray.endpoint), normal))/dot(ray.direction, normal);
    if (t > small_t)
