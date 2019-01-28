@@ -10,12 +10,8 @@ Shade_Surface(const Ray& ray,const vec3& intersection_point,
 {
     vec3 color, colorA;
     colorA += world.ambient_color * world.ambient_intensity * color_ambient;
-
-
-      
-
-color  = colorA;
-    TODO; //determine the color
+    color  = colorA;
+    //TODO; //determine the color
 
     return color;
 }
