@@ -30,7 +30,7 @@ Shade_Surface(const Ray& ray,const vec3& intersection_point,
     		}
     		else{ ln = dot(l,n); }
 
-    		colorD +=color_diffuse * L * ln;
+    	//	colorD +=color_diffuse * L * ln;
 
        //have to ask TA
         // if(dot((light_intersect), normal)<0)
@@ -54,12 +54,33 @@ Shade_Surface(const Ray& ray,const vec3& intersection_point,
       RC = dot(R,C);
      }
           double specular_intensity = pow(RC, specular_power);
-          colorS += color_specular * L * specular_intensity;
-//std:: cout << "colord" << colorD << std ::endl;
-//std:: cout << "colors" << colorS << std ::endl;
+        //  colorS += color_specular * L * specular_intensity;
+        //std:: cout << "colord" << colorD << std ::endl;
+        //std:: cout << "colors" << colorS << std ::endl;
+
+  //  color  = colorA + colorD + colorS;
+    //TODO; //determine the color
+    //enabbling shadows
+    Hit hit;
+    Ray s_ray (intersection_point, l);
+    hit = world.Closest_Intersection(s_ray);
+    //std:: cout << "hit.dist" << hit.dist << std ::endl;
+
+
+
+     if ((world.enable_shadows) && (hit.dist != 0 || ((l.magnitude())< hit.dist)))
+     {
+       //color ambient
+       //std:: cout << "hit.dist" << hit.dist << std ::endl;
+       //std:: cout << "in the if loop" << std ::endl;
+     }
+   else {        colorS += color_specular * L * specular_intensity;
+        colorD += color_diffuse * L * ln; }
+
+
 
     color  = colorA + colorD + colorS;
-    //TODO; //determine the color
+
 
 }
 
