@@ -54,12 +54,15 @@ Shade_Surface(const Ray& ray,const vec3& intersection_point,
       RC = dot(R,C);
      }
           double specular_intensity = pow(RC, specular_power);
-          colorS += color_specular * L * specular_intensity;}
+          colorS += color_specular * L * specular_intensity;
 //std:: cout << "colord" << colorD << std ::endl;
 //std:: cout << "colors" << colorS << std ::endl;
 
     color  = colorA + colorD + colorS;
     //TODO; //determine the color
+
+}
+
 
     return color;
 }
