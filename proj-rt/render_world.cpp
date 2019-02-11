@@ -53,7 +53,7 @@ Ray ray;
 vec3 direction = (this->camera.World_Position(pixel_index)- camera.position).normalized();
 ray.endpoint = camera.position;   //we know that the ray endpoint would be actually the position of the camera
 ray.direction = direction;
-vec3 color=Cast_Ray(ray,1);
+vec3 color=Cast_Ray(ray,recursion_depth_limit);
 camera.Set_Pixel(pixel_index,Pixel_Color(color));
 }
 
@@ -73,21 +73,16 @@ vec3 Render_World::Cast_Ray(const Ray& ray,int recursion_depth)
 {
     vec3 color;
 
-    if (Closest_Intersection(ray).dist >= small_t) {
-        color =Closest_Intersection(ray).object->material_shader->Shade_Surface(ray, ray.Point(Closest_Intersection(ray).dist), Closest_Intersection(ray).object->Normal(ray.Point(Closest_Intersection(ray).dist), Closest_Intersection(ray).part), recursion_depth);
+    Hit h =Closest_Intersection(ray);
+    if (h.dist >= small_t) {
+        color =h.object->material_shader->Shade_Surface(ray, ray.Point(h.dist), h.object->Normal(ray.Point(h.dist), h.part), recursion_depth);
     }
-
-    else if (recursion_depth>recursion_depth_limit)
-{
-  color = {0,0,0}; //gotta check
-  //need to ask about the recursion_depth_limit
-}
 
     else
     {
       vec3 dumb; //empty vector TA told to do this
-     color = background_shader->Shade_Surface(ray,dumb, ray.endpoint, recursion_depth) ;
-        //color = {0,0,0}; //TA told that this is only valid for a couple
+     color = background_shader->Shade_Surface(ray, ray.endpoint, dumb, recursion_depth) ;
+        //color = {0,0,0};
     }
 // determine the color here
     return color;

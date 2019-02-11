@@ -2,6 +2,11 @@
 #include <fstream>
 #include <string>
 #include <limits>
+#include "plane.h"
+#define A 0
+#define B 1
+#define C 2
+
 
 // Consider a triangle to intersect a ray if the ray intersects the plane of the
 // triangle with barycentric weights in [-weight_tolerance, 1+weight_tolerance]
@@ -42,16 +47,37 @@ void Mesh::Read_Obj(const char* file)
 // Check for an intersection against the ray.  See the base class for details.
 Hit Mesh::Intersection(const Ray& ray, int part) const
 {
-    TODO;
-    return {};
+    //TODO;
+    Hit intersection {NULL, -1, 0};
+    double min_t, dist;
+    dist=0; min_t =0;
+
+   bool test_27  = true;
+       for(size_t i = 0; i < triangles.size();i++){
+           if(Intersect_Triangle(ray,i,dist)){
+               if(test_27){
+          test_27 = false;
+                 min_t = dist;
+                intersection.part = i;
+               }
+           }
+     }
+    intersection.object = this;
+    intersection.dist= min_t;
+     return intersection;
+
 }
 
 // Compute the normal direction for the triangle with index part.
 vec3 Mesh::Normal(const vec3& point, int part) const
 {
     assert(part>=0);
-    TODO;
-    return vec3();
+    //TODO;
+    vec3 u = vertices[triangles[part][B]] - vertices[triangles[part][A]]; //B=1
+    vec3 v = vertices[triangles[part][C]] - vertices[triangles[part][A]]; //C =2
+
+    return cross(u, v).normalized();
+
 }
 
 // This is a helper routine whose purpose is to simplify the implementation
@@ -68,8 +94,33 @@ vec3 Mesh::Normal(const vec3& point, int part) const
 // two triangles.
 bool Mesh::Intersect_Triangle(const Ray& ray, int tri, double& dist) const
 {
-    TODO;
-    return false;
+    //TODO;
+    Hit hit = Plane(vertices[triangles[tri][A]],
+                    Normal(vertices[triangles[tri][A]],tri))
+                    .Intersection(ray, tri);
+
+   double d = dot(cross(ray.direction,
+                            (vertices[triangles[tri][B]] - vertices[triangles[tri][A]]))
+                            ,vertices[triangles[tri][C]] - vertices[triangles[tri][A]]);
+
+
+   double gamma = dot(cross(ray.direction, vertices[triangles[tri][B]]
+                            - vertices[triangles[tri][A]]),
+                      ray.Point(dist)- vertices[triangles[tri][A]]) / d;
+   double beta = dot(cross(vertices[triangles[tri][C]]
+                            - vertices[triangles[tri][A]], ray.direction),
+                     ray.Point(dist) - vertices[triangles[tri][A]]) / d;
+   double alpha = 1 - (gamma + beta); //alpha + beta + gamma  =1;
+
+
+//comparing the barycentric coordinates.
+   if (gamma > -weight_tol && beta > -weight_tol && alpha > -weight_tol) {
+       dist = hit.dist;
+       return true;
+   }
+
+   return false;
+
 }
 
 // Compute the bounding box.  Return the bounding box of only the triangle whose

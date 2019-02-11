@@ -19,21 +19,21 @@ Shade_Surface(const Ray& ray,const vec3& intersection_point,
     vec3 L = world.lights[i]->Emitted_Light(intersect);
     vec3 n = normal.normalized();
     vec3 I = intersect.normalized();
-    double max_d = std::max((double)0, dot(n,I)); //possibly checking for the bug as well
+    double max_d = std::max(0.0, dot(n,I)); //possibly checking for the bug as well
     // std :: cout << "diffuse " << max_d <<std ::endl;
-//colorD += color_diffuse * L * max_d;
+//colorD += color_diffuse * L * max_d
 
-
-    vec3 R = (I - n * (2 * dot(I,n))).normalized();
-    vec3 C = (intersection_point - ray.endpoint).normalized();
-    double max_s = std :: pow(std::max((double)0, dot(R,C)),specular_power);
+// calculating the specular 
+    vec3 R = ((2 * dot(I,n)* n - I)).normalized();
+    vec3 C = (ray.endpoint - intersection_point).normalized();
+    double max_s = std :: pow(std::max(0.0, dot(R,C)),specular_power);
 // std :: cout << "diffuse " << max_s <<std ::endl;
     //colorS += color_specular * L * max_s;
        //sahdow
         Hit hit;
         Ray s_ray (intersection_point, I);
         hit = world.Closest_Intersection(s_ray);
-    if ((world.enable_shadows) && (hit.dist != 0 || ((I.magnitude())< hit.dist)))
+    if ((world.enable_shadows) && (hit.dist > 0 && ((intersect.magnitude())> hit.dist)))
          {
            //color ambient
            //std:: cout << "hit.dist" << hit.dist << std ::endl;
@@ -46,10 +46,6 @@ Shade_Surface(const Ray& ray,const vec3& intersection_point,
 
 
     color = colorA + colorD + colorS;
-
-
-
-
   }
     return color;
 }
